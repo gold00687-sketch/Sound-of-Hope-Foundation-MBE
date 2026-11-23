@@ -1,3 +1,4 @@
+import os
 import sys
 import traceback
 
@@ -17,16 +18,19 @@ if __name__ == "__main__":
         traceback.print_exc()
         sys.exit(1)
 
+    # Railway (and other PaaS) inject $PORT; fall back to 8000 for local dev.
+    port = int(os.environ.get("PORT", 8000))
+
     if not settings.is_production:
         print("\n" + "=" * 50)
-        print(f"  Swagger docs:  http://localhost:8000/docs")
-        print(f"  ReDoc docs:    http://localhost:8000/redoc")
+        print(f"  Swagger docs:  http://localhost:{port}/docs")
+        print(f"  ReDoc docs:    http://localhost:{port}/redoc")
         print("=" * 50 + "\n")
 
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
-        port=8000,
+        port=port,
         reload=settings.is_development,
         log_level="debug" if settings.app_debug else "info",
     )
